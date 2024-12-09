@@ -1,6 +1,6 @@
 # flutter_application_1
 
-A new Flutter project.
+Projek Aplikasi Android Flutter - Android Lanjut
 
 ## Getting Started
 
