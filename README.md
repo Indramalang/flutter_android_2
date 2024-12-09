@@ -1,6 +1,6 @@
 # flutter_application_1
 
-Projek Aplikasi Android Flutter - Android Lanjut
+Projek Aplikasi Android Flutter - Android Lanjut V0.0
 
 ## Getting Started
 
