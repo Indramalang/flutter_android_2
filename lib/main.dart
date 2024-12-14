@@ -193,7 +193,7 @@ class MyHomePage extends StatelessWidget {
             ),
             ListTile(
               leading: const Icon(Icons.calculate),
-              title: const Text('Kalkulator Sederhana'),
+              title: const Text('Kalkulator'),
               onTap: () {
                 Navigator.push(
                   context,
