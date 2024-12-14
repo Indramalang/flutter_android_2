@@ -64,7 +64,7 @@ class _StopwatchPageState extends State<StopwatchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Stopwatch'),
+        title: Text('Pewaktu Stopwatch'),
       ),
       body: Center(
         child: Column(
