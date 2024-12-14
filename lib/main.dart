@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'kode1.dart';
 import 'kode_Listcheckbox_1.dart';
 import 'calculator.dart';
+import 'stopwatch_page.dart';
 
 void main() async {
   await Hive.initFlutter(); // Inisialisasi Hive
@@ -172,7 +173,7 @@ class MyHomePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => MySecondPage(
-                            title: 'Flutter Demo Home Page',
+                            title: 'Counter Tasbih',
                           )),
                 );
               },
@@ -185,19 +186,31 @@ class MyHomePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                       builder: (context) => ListCheckbox(
-                            title: 'Flutter Demo Home Page',
+                            title: 'Todo List',
                           )),
                 );
               },
             ),
             ListTile(
               leading: const Icon(Icons.calculate),
-              title: const Text('Kalkulator Sederhana'),
+              title: const Text('Kalkulator'),
               onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => CalculatorScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.timer),
+              title: const Text('Stopwatch'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => StopwatchPage(),
                   ),
                 );
               },
