@@ -1,6 +1,10 @@
 # flutter_application_1
 
+<<<<<<< HEAD
 Projek Aplikasi Android Flutter - Android Lanjut V0.0
+=======
+Update
+>>>>>>> origin/versi_awal
 
 ## Getting Started
 
