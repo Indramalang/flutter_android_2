@@ -4,6 +4,7 @@ import 'kode1.dart';
 import 'kode_Listcheckbox_1.dart';
 import 'calculator.dart';
 import 'stopwatch_page.dart';
+import 'timer.dart';
 
 void main() async {
   await Hive.initFlutter(); // Inisialisasi Hive
@@ -211,6 +212,18 @@ class MyHomePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => StopwatchPage(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.timer),
+              title: const Text('Timer'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TimerPage(),
                   ),
                 );
               },
