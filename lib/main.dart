@@ -119,15 +119,15 @@ class _AuthPageState extends State<AuthPage> {
   }
 }
 
-class MyHomePage extends StatefulWidget { // 👈 Perhatikan perubahan ini
+class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState(); // 👈 dan ini
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> { // 👈 Kelas State yang mengelola data
+class _MyHomePageState extends State<MyHomePage> {
   final List<String> _dailyQuotes = [
     "Kegagalan adalah bumbu yang memberi rasa pada kesuksesan.",
     "Lakukan dengan sepenuh hati, maka hasil tidak akan mengkhianati.",
@@ -142,13 +142,14 @@ class _MyHomePageState extends State<MyHomePage> { // 👈 Kelas State yang meng
   @override
   void initState() {
     super.initState();
-    _generateRandomQuote(); // Panggil fungsi saat widget pertama kali dibuat
+    _generateRandomQuote();
   }
 
   void _generateRandomQuote() {
     final random = Random();
     final randomIndex = random.nextInt(_dailyQuotes.length);
-    setState(() { // 👈 Penting untuk memberitahu Flutter untuk membangun ulang tampilan
+    setState(() {
+      //
       _currentQuote = _dailyQuotes[randomIndex];
     });
   }
@@ -173,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> { // 👈 Kelas State yang meng
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title)), // 👈 Gunakan widget.title untuk mengakses properti dari MyHomePage
+          title: Text(widget.title)),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -274,7 +275,7 @@ class _MyHomePageState extends State<MyHomePage> { // 👈 Kelas State yang meng
               ),
               const SizedBox(height: 10),
               Text(
-                _currentQuote, // 👈 Sekarang kita bisa menampilkan _currentQuote
+                _currentQuote,
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 16),
               ),
