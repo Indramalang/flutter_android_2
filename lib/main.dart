@@ -5,6 +5,7 @@ import 'kode_Listcheckbox_1.dart';
 import 'calculator.dart';
 import 'stopwatch_page.dart';
 import 'timer.dart';
+import 'dart:math';
 
 void main() async {
   await Hive.initFlutter(); // Inisialisasi Hive
@@ -118,9 +119,39 @@ class _AuthPageState extends State<AuthPage> {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget { // 👈 Perhatikan perubahan ini
   const MyHomePage({super.key, required this.title});
   final String title;
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState(); // 👈 dan ini
+}
+
+class _MyHomePageState extends State<MyHomePage> { // 👈 Kelas State yang mengelola data
+  final List<String> _dailyQuotes = [
+    "Kegagalan adalah bumbu yang memberi rasa pada kesuksesan.",
+    "Lakukan dengan sepenuh hati, maka hasil tidak akan mengkhianati.",
+    "Masa depan dimulai hari ini, bukan besok.",
+    "Teruslah belajar, karena hidup tak pernah berhenti mengajarkan.",
+    "Setiap kesulitan pasti ada kemudahan.",
+    // Kamu bisa tambahkan kutipan lain di sini
+  ];
+
+  String _currentQuote = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _generateRandomQuote(); // Panggil fungsi saat widget pertama kali dibuat
+  }
+
+  void _generateRandomQuote() {
+    final random = Random();
+    final randomIndex = random.nextInt(_dailyQuotes.length);
+    setState(() { // 👈 Penting untuk memberitahu Flutter untuk membangun ulang tampilan
+      _currentQuote = _dailyQuotes[randomIndex];
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +173,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(title)),
+          title: Text(widget.title)), // 👈 Gunakan widget.title untuk mengakses properti dari MyHomePage
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -231,8 +262,32 @@ class MyHomePage extends StatelessWidget {
           ],
         ),
       ),
-      body: const Center(
-        child: Text('Selamat Datang di Aplikasi Android V0.0'),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'Kutipan Hari Ini:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                _currentQuote, // 👈 Sekarang kita bisa menampilkan _currentQuote
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 20),
+              const Text('Selamat Datang di Aplikasi Android V0.0'),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _generateRandomQuote,
+        tooltip: 'Muat Kutipan Baru',
+        child: const Icon(Icons.refresh),
       ),
     );
   }
