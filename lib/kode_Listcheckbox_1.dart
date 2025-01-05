@@ -11,36 +11,34 @@ class ListCheckbox extends StatefulWidget {
 
 class _ListCheckboxState extends State<ListCheckbox> {
   late Box todoBox;
-  final TextEditingController _textController =
-      TextEditingController(); // Tambahkan controller
+  final TextEditingController _textController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    todoBox = Hive.box('todoBox'); // Inisialisasi Hive box
+    todoBox = Hive.box('todoBox');
   }
 
   @override
   void dispose() {
-    _textController.dispose(); // Hapus controller saat widget dihancurkan
+    _textController.dispose();
     super.dispose();
   }
 
   void addTodoItem(String item) {
-    todoBox.add({'task': item, 'isChecked': false}); // Menambahkan item baru
-    setState(() {}); // Memperbarui tampilan
+    todoBox.add({'task': item, 'isChecked': false});
+    setState(() {});
   }
 
   void toggleCheckbox(int index, bool? value) {
     var task = todoBox.getAt(index);
-    todoBox.putAt(index,
-        {'task': task['task'], 'isChecked': value}); // Memperbarui checkbox
-    setState(() {}); // Memperbarui tampilan
+    todoBox.putAt(index, {'task': task['task'], 'isChecked': value});
+    setState(() {});
   }
 
   void deleteAllTasks() {
-    todoBox.clear(); // Menghapus semua item
-    setState(() {}); // Memperbarui tampilan
+    todoBox.clear();
+    setState(() {});
   }
 
   @override
@@ -48,35 +46,81 @@ class _ListCheckboxState extends State<ListCheckbox> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        elevation: 2, // Tambahkan sedikit bayangan
       ),
       body: todoBox.isEmpty
           ? Center(
-              child: Text(
-                'Silahkan untuk membuat todo list',
-                style: TextStyle(fontSize: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.playlist_add_check,
+                      size: 80, color: Colors.grey), // Tambah ikon
+                  SizedBox(height: 10),
+                  Text(
+                    'Yuk, mulai buat daftar tugasmu!',
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                ],
               ),
             )
           : ListView.builder(
               itemCount: todoBox.length,
               itemBuilder: (context, index) {
                 var task = todoBox.getAt(index);
-                return ListTile(
-                  leading: Transform.scale(
-                    scale: 1.2,
-                    child: Checkbox(
-                      activeColor: Colors.purple,
-                      checkColor: Colors.white,
-                      value: task['isChecked'],
-                      onChanged: (value) => toggleCheckbox(index, value),
+                return Card(
+                  // Bungkus dengan Card
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: ListTile(
+                    leading: Transform.scale(
+                      scale: 1.2,
+                      child: Checkbox(
+                        activeColor: Colors.purple,
+                        checkColor: Colors.white,
+                        value: task['isChecked'],
+                        onChanged: (value) => toggleCheckbox(index, value),
+                      ),
+                    ),
+                    title: Text(
+                      task['task'],
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        decoration: task['isChecked']
+                            ? TextDecoration.lineThrough
+                            : TextDecoration.none,
+                      ),
                     ),
                   ),
-                  title: Text(task['task'], style: TextStyle(fontSize: 18.0)),
                 );
               },
             ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => deleteAllTasks(),
+        onPressed: () {
+          showDialog(
+            // Tambahkan konfirmasi
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Konfirmasi Hapus'),
+                content: Text('Yakin ingin menghapus semua tugas?'),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('Batal'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                  TextButton(
+                    child: Text('Hapus', style: TextStyle(color: Colors.red)),
+                    onPressed: () {
+                      deleteAllTasks();
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        },
         child: Icon(Icons.delete),
+        backgroundColor: Colors.redAccent, // Warna yang lebih 'berbahaya'
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -84,8 +128,7 @@ class _ListCheckboxState extends State<ListCheckbox> {
           children: [
             Expanded(
               child: TextField(
-                controller:
-                    _textController, // Controller untuk mengontrol input
+                controller: _textController,
                 decoration: InputDecoration(
                   hintText: 'Tambah Todo',
                   border: OutlineInputBorder(),
@@ -95,11 +138,14 @@ class _ListCheckboxState extends State<ListCheckbox> {
             IconButton(
               icon: Icon(Icons.add),
               onPressed: () {
-                String newTask =
-                    _textController.text.trim(); // Ambil teks input
+                String newTask = _textController.text.trim();
                 if (newTask.isNotEmpty) {
-                  addTodoItem(newTask); // Tambahkan ke daftar
-                  _textController.clear(); // Hapus teks dari TextField
+                  addTodoItem(newTask);
+                  _textController.clear();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    // Feedback visual
+                    SnackBar(content: Text('$newTask ditambahkan!')),
+                  );
                 }
               },
             ),

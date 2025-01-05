@@ -8,13 +8,19 @@ class TimerPage extends StatefulWidget {
 
 class _TimerPageState extends State<TimerPage> {
   Timer? _timer;
-  int _remainingSeconds = 60; // Default waktu (misalnya 60 detik)
+  int _remainingSeconds = 60;
   bool _isRunning = false;
+  int _totalSecondsAtStart = 60; // Tambahkan ini
 
-  // Controller untuk masing-masing input jam, menit, dan detik
   TextEditingController _hourController = TextEditingController();
   TextEditingController _minuteController = TextEditingController();
   TextEditingController _secondController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _totalSecondsAtStart = _remainingSeconds; // Inisialisasi saat widget dibuat
+  }
 
   void _startTimer() {
     if (_remainingSeconds <= 0) return;
@@ -25,6 +31,7 @@ class _TimerPageState extends State<TimerPage> {
         } else {
           _timer?.cancel();
           _isRunning = false;
+          // Tambahkan logika untuk memainkan suara di sini
         }
       });
     });
@@ -44,6 +51,7 @@ class _TimerPageState extends State<TimerPage> {
     _timer?.cancel();
     setState(() {
       _remainingSeconds = _getTotalSecondsFromInput();
+      _totalSecondsAtStart = _remainingSeconds; // Update saat reset
       _isRunning = false;
     });
   }
@@ -51,15 +59,14 @@ class _TimerPageState extends State<TimerPage> {
   void _setTimeFromInput() {
     setState(() {
       _remainingSeconds = _getTotalSecondsFromInput();
+      _totalSecondsAtStart = _remainingSeconds; // Update saat input berubah
     });
   }
 
-  // Menghitung total detik berdasarkan input jam, menit, dan detik
   int _getTotalSecondsFromInput() {
     final hours = int.tryParse(_hourController.text) ?? 0;
     final minutes = int.tryParse(_minuteController.text) ?? 0;
     final seconds = int.tryParse(_secondController.text) ?? 0;
-
     return hours * 3600 + minutes * 60 + seconds;
   }
 
@@ -67,7 +74,6 @@ class _TimerPageState extends State<TimerPage> {
     final int hours = seconds ~/ 3600;
     final int minutes = (seconds % 3600) ~/ 60;
     final int remainingSeconds = seconds % 60;
-
     return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}";
   }
 
@@ -84,7 +90,7 @@ class _TimerPageState extends State<TimerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Timer'),
+        title: Text('Timer Keren'),
       ),
       body: Center(
         child: Column(
@@ -92,37 +98,53 @@ class _TimerPageState extends State<TimerPage> {
           children: <Widget>[
             Text(
               _formatTime(_remainingSeconds),
-              style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
-            // Input untuk Jam, Menit, Detik
+            SizedBox(
+              width: 200,
+              child: LinearProgressIndicator(
+                value: _totalSecondsAtStart > 0
+                    ? _remainingSeconds / _totalSecondsAtStart
+                    : 0,
+                backgroundColor: Colors.grey[300],
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+              ),
+            ),
+            SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildTimeInputField(_hourController, 'Hour', '00'),
+                _buildTimeInputField(_hourController, 'Jam', '00'),
                 SizedBox(width: 10),
-                _buildTimeInputField(_minuteController, 'Minute', '00'),
+                _buildTimeInputField(_minuteController, 'Menit', '00'),
                 SizedBox(width: 10),
-                _buildTimeInputField(_secondController, 'Second', '00'),
+                _buildTimeInputField(_secondController, 'Detik', '00'),
               ],
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: _isRunning ? null : _startTimer,
-                  child: Text('Start'),
-                ),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: _isRunning ? _stopTimer : null,
-                  child: Text('Stop'),
+                  onPressed: _isRunning ? _stopTimer : _startTimer,
+                  child: Icon(_isRunning ? Icons.pause : Icons.play_arrow,
+                      size: 30),
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(25),
+                    backgroundColor: _isRunning ? Colors.orange : Colors.blue,
+                  ),
                 ),
                 SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: _resetTimer,
-                  child: Text('Reset'),
+                  child: Icon(Icons.replay, size: 30),
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(25),
+                    backgroundColor: Color.fromARGB(255, 199, 64, 64),
+                  ),
                 ),
               ],
             ),
@@ -132,7 +154,6 @@ class _TimerPageState extends State<TimerPage> {
     );
   }
 
-  // Fungsi untuk membangun input field (jam, menit, detik)
   Widget _buildTimeInputField(
       TextEditingController controller, String label, String hint) {
     return SizedBox(
@@ -146,7 +167,7 @@ class _TimerPageState extends State<TimerPage> {
           border: OutlineInputBorder(),
         ),
         onChanged: (value) {
-          _setTimeFromInput(); // Update waktu setiap ada perubahan
+          _setTimeFromInput();
         },
       ),
     );

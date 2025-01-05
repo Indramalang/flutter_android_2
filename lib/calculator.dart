@@ -58,15 +58,28 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
-              decoration: InputDecoration(labelText: 'Angka pertama'),
+              decoration: InputDecoration(
+                labelText: 'Angka pertama',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                prefixIcon: Icon(Icons.looks_one),
+              ),
             ),
+            SizedBox(height: 10), // Jarak antar TextField
             TextField(
               controller: _controller2,
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
               ],
-              decoration: InputDecoration(labelText: 'Angka kedua'),
+              decoration: InputDecoration(
+                labelText: 'Angka kedua',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                prefixIcon: Icon(Icons.looks_two),
+              ),
             ),
             SizedBox(height: 20),
             Row(
@@ -74,26 +87,48 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
               children: [
                 ElevatedButton(
                   onPressed: () => _calculate('+'),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
                   child: Text('+'),
                 ),
                 ElevatedButton(
                   onPressed: () => _calculate('-'),
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.green),
                   child: Text('-'),
                 ),
                 ElevatedButton(
                   onPressed: () => _calculate('*'),
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.orange),
                   child: Text('X'),
                 ),
                 ElevatedButton(
                   onPressed: () => _calculate('/'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.redAccent),
                   child: Text('/'),
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            Text(
-              'Hasil: $_result',
-              style: TextStyle(fontSize: 20),
+            SizedBox(height: 30),
+            Container(
+              padding: EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Text(
+                _result.startsWith("Input tidak valid")
+                    ? _result // Tampilkan pesan kesalahan apa adanya
+                    : 'Hasil: $_result',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: _result.startsWith("Input tidak valid")
+                      ? Colors.red
+                      : Colors.black,
+                ),
+              ),
             ),
           ],
         ),

@@ -10,6 +10,7 @@ class _StopwatchPageState extends State<StopwatchPage> {
   late Timer _timer;
   int _elapsedSeconds = 0;
   bool _isRunning = false;
+  List<String> _lapTimes = [];
 
   void _startTimer() {
     _timer = Timer.periodic(Duration(seconds: 1), (Timer timer) {
@@ -36,6 +37,13 @@ class _StopwatchPageState extends State<StopwatchPage> {
     setState(() {
       _elapsedSeconds = 0;
       _isRunning = false;
+      _lapTimes.clear(); // Bersihkan daftar lap saat reset
+    });
+  }
+
+  void _recordLapTime() {
+    setState(() {
+      _lapTimes.insert(0, _formatTime(_elapsedSeconds));
     });
   }
 
@@ -71,26 +79,49 @@ class _StopwatchPageState extends State<StopwatchPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(_formatTime(_elapsedSeconds),
-                style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
+                style: TextStyle(fontSize: 60, fontWeight: FontWeight.bold)),
             SizedBox(height: 40),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: _isRunning ? null : _startTimer,
-                  child: Text('Start'),
-                ),
-                SizedBox(width: 20),
-                ElevatedButton(
-                  onPressed: _isRunning ? _stopTimer : null,
-                  child: Text('Stop'),
+                  onPressed: _isRunning ? _stopTimer : _startTimer,
+                  child: Icon(_isRunning ? Icons.pause : Icons.play_arrow),
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(20),
+                  ),
                 ),
                 SizedBox(width: 20),
                 ElevatedButton(
                   onPressed: _resetTimer,
-                  child: Text('Reset'),
+                  child: Icon(Icons.replay),
+                  style: ElevatedButton.styleFrom(
+                    shape: CircleBorder(),
+                    padding: EdgeInsets.all(20),
+                  ),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: _isRunning ? _recordLapTime : null,
+                  child: Text('Lap'),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+                  ),
                 ),
               ],
+            ),
+            SizedBox(height: 30),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _lapTimes.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    leading: Text('Lap ${index + 1}'),
+                    trailing: Text(_lapTimes[index]),
+                  );
+                },
+              ),
             ),
           ],
         ),

@@ -40,6 +40,7 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   final TextEditingController _nameController = TextEditingController();
   late Box userBox;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -47,23 +48,34 @@ class _AuthPageState extends State<AuthPage> {
     userBox = Hive.box('userBox');
   }
 
-  void _authenticateUser() {
+  void _authenticateUser() async {
+    // Tambahkan async karena ada delay
+    setState(() {
+      _isLoading = true; // Tampilkan indikator loading
+    });
+
+    await Future.delayed(const Duration(milliseconds: 500)); // Simulasi proses
+
     final enteredName = _nameController.text.trim();
     final savedName = userBox.get('username');
 
     if (savedName == null) {
       // Registrasi: Simpan nama baru
       userBox.put('username', enteredName);
-      _showMessage('Registrasi berhasil!');
+      _showMessage('Registrasi berhasil! 🎉');
       _navigateToHomePage();
     } else if (savedName == enteredName) {
       // Login: Nama cocok
-      _showMessage('Login berhasil!');
+      _showMessage('Login berhasil! Selamat datang kembali! 👋');
       _navigateToHomePage();
     } else {
       // Nama tidak cocok
-      _showMessage('Nama tidak cocok, silakan coba lagi.');
+      _showMessage('Nama tidak cocok, silakan coba lagi. 🤔');
     }
+
+    setState(() {
+      _isLoading = false; // Sembunyikan indikator loading
+    });
   }
 
   void _showMessage(String message) {
@@ -76,7 +88,7 @@ class _AuthPageState extends State<AuthPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
+        builder: (context) => const MyHomePage(title: 'Aplikasiku'),
       ),
     );
   }
@@ -85,33 +97,59 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Autentikasi Pengguna'),
+        backgroundColor: Theme.of(context).colorScheme.primary, // Warna AppBar
+        title: const Text('Autentikasi Pengguna',
+            style: TextStyle(color: Colors.white)), // Warna teks AppBar
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                'Masukkan Nama Anda:',
-                style: TextStyle(fontSize: 18),
+          padding: const EdgeInsets.all(32.0), // Padding diperbesar
+          child: Card(
+            // Bungkus dengan Card
+            elevation: 4, // Tambahkan bayangan
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10)), // Bentuk sudut Card
+            child: Padding(
+              padding: const EdgeInsets.all(24.0), // Padding di dalam Card
+              child: Column(
+                mainAxisSize: MainAxisSize
+                    .min, // Agar Column tidak memenuhi seluruh layar
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    'Masukkan Nama Anda:',
+                    style: TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold), // Gaya teks
+                  ),
+                  const SizedBox(height: 24), // Jarak yang lebih besar
+                  TextField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      border: const OutlineInputBorder(),
+                      hintText: 'Nama Anda',
+                      labelText: 'Nama Pengguna', // Tambahkan label
+                      prefixIcon: const Icon(Icons.person), // Tambahkan ikon
+                    ),
+                  ),
+                  const SizedBox(height: 32), // Jarak yang lebih besar
+                  ElevatedButton(
+                    onPressed: _isLoading
+                        ? null
+                        : _authenticateUser, // Menonaktifkan tombol saat loading
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 32, vertical: 16), // Ukuran tombol
+                      shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(8)), // Bentuk tombol
+                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator() // Indikator loading
+                        : const Text('Lanjutkan'),
+                  ),
+                ],
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Nama Anda',
-                ),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _authenticateUser,
-                child: const Text('Lanjutkan'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -134,6 +172,8 @@ class _MyHomePageState extends State<MyHomePage> {
     "Masa depan dimulai hari ini, bukan besok.",
     "Teruslah belajar, karena hidup tak pernah berhenti mengajarkan.",
     "Setiap kesulitan pasti ada kemudahan.",
+    "Keberanian adalah kunci untuk membuka semua pintu.",
+    "Saat kamu merasa lelah, ingatlah bahwa setiap langkahmu adalah bagian dari perjuangan menuju impianmu."
     // Kamu bisa tambahkan kutipan lain di sini
   ];
 
@@ -149,7 +189,6 @@ class _MyHomePageState extends State<MyHomePage> {
     final random = Random();
     final randomIndex = random.nextInt(_dailyQuotes.length);
     setState(() {
-      //
       _currentQuote = _dailyQuotes[randomIndex];
     });
   }
@@ -173,34 +212,43 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: Text(widget.title)),
+        backgroundColor: Theme.of(context).colorScheme.primary, // Warna AppBar
+        title: Text(widget.title,
+            style: const TextStyle(color: Colors.white)), // Warna teks AppBar
+        elevation: 2, // Efek bayangan
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.deepPurple,
+            UserAccountsDrawerHeader(
+              // Menggunakan UserAccountsDrawerHeader
+              accountName: Text(savedName), // Menampilkan nama pengguna
+              accountEmail: const Text(""), // Bisa diisi email jika ada
+              currentAccountPicture: const CircleAvatar(
+                // Contoh avatar
+                backgroundColor: Colors.white,
+                child: Icon(Icons.person),
               ),
-              child: Text(
-                'Menu',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+              decoration: const BoxDecoration(
+                color: Colors.deepPurple,
               ),
             ),
             ListTile(
               leading: const Icon(Icons.home),
               title: const Text('Home'),
+              selected: true, // Menandakan halaman sedang aktif
+              selectedColor: Theme.of(context)
+                  .colorScheme
+                  .secondaryContainer, // Warna indikator
               onTap: () {
                 Navigator.pop(context); // Menutup drawer
               },
             ),
+            const Divider(), // Pemisah antar menu
             ListTile(
               leading: const Icon(Icons.navigate_next),
-              title: const Text('Halaman 2'),
+              title: const Text('Counter Tasbih'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -212,8 +260,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.navigate_next),
-              title: const Text('CheckBox List'),
+              leading: const Icon(Icons.checklist),
+              title: const Text('Todo List'),
               onTap: () {
                 Navigator.push(
                   context,
@@ -237,7 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.timer),
+              leading: const Icon(Icons.timer_sharp),
               title: const Text('Stopwatch'),
               onTap: () {
                 Navigator.push(
@@ -249,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.timer),
+              leading: const Icon(Icons.timer_outlined),
               title: const Text('Timer'),
               onTap: () {
                 Navigator.push(
@@ -269,18 +317,41 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text(
-                'Kutipan Hari Ini:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                _currentQuote,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 16),
+              Card(
+                // Bungkus kutipan dengan Card
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        'Kutipan Hari Ini:',
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary), // Warna judul
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        _currentQuote,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 18,
+                            fontStyle: FontStyle.italic), // Gaya teks kutipan
+                      ),
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
-              const Text('Selamat Datang di Aplikasi Android V0.0'),
+              Text(
+                'Selamat Datang di Aplikasi Android V0.0, $savedName!', // Pesan selamat datang personal
+                style: const TextStyle(fontSize: 16),
+              ),
             ],
           ),
         ),
@@ -288,7 +359,8 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _generateRandomQuote,
         tooltip: 'Muat Kutipan Baru',
-        child: const Icon(Icons.refresh),
+        backgroundColor: Theme.of(context).colorScheme.secondary, // Warna FAB
+        child: const Icon(Icons.refresh, color: Colors.white), // Warna ikon
       ),
     );
   }
