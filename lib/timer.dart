@@ -90,7 +90,7 @@ class _TimerPageState extends State<TimerPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Timer Keren'),
+        title: Text('Timer'),
       ),
       body: Center(
         child: Column(
